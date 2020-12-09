@@ -1,0 +1,48 @@
+require "../internals/rake/shared/system.rb"
+require "../internals/rake/shared/environment.rb"
+
+# Ensure the environment file exists
+ensure_env_file_exists()
+
+# Set the name of the solution
+SOLUTION_NAME="watchdog"
+
+# This is the default task "rake"
+task :default do
+  sh('rake -T')
+end
+
+# Define the taks for the watchdog solution
+namespace :_solution_watchdog do
+
+  desc "solution_watchdog: all containers up"
+  task :up do
+    sh("docker-compose -p #{SOLUTION_NAME} up -d")
+  end
+
+  desc "solution_watchdog: show logs"
+  task :logs do
+    sh("docker-compose -p #{SOLUTION_NAME} logs -f")
+  end
+  task :log => :logs
+
+  desc "solution_watchdog: all containers down"
+  task :down do
+    sh("docker-compose -p #{SOLUTION_NAME} stop")
+    sh("docker-compose -p #{SOLUTION_NAME} rm -f")
+  end
+
+  desc "solution_watchdog: restart all containers"
+  task :restart => [:down, :up, :log]
+
+end
+
+task :up => '_solution_watchdog:up'
+task :logs => '_solution_watchdog:logs'
+task :log => '_solution_watchdog:log'
+task :down => '_solution_watchdog:down'
+task :restart => '_solution_watchdog:restart'
+
+# Import the speific tasks for each service and app
+require "../services/nginx/Rakefile-svc_nginx.rb"
+require "../sources/js/apps/greyhound/Rakefile-app_greyhound.rb"
