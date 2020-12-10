@@ -1,0 +1,35 @@
+filebeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: false
+
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      hints.enabled: true
+      templates:
+        - condition:
+            contains:
+              docker.container.name: svc_nginx
+          config:
+            - module: nginx
+              access:
+                input:
+                  type: docker
+                  containers:
+                    ids: "${data.docker.container.id}"
+                    stream: "stdout"
+              error:
+                input:
+                  type: docker
+                  containers:
+                    ids: "${data.docker.container.id}"
+                    stream: "stderr"
+
+processors:
+- add_cloud_metadata: ~
+
+output.elasticsearch:
+  hosts: '${ELASTICSEARCH_HOSTS:svc_elastic:9200}'
+  username: '${ELASTICSEARCH_USERNAME:elastic}'
+  password: '${ELASTICSEARCH_PASSWORD:changeme}'

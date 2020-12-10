@@ -22,6 +22,8 @@ services:
       - svc_elastic
       - svc_kibana
       - app_greyhound
+    networks:
+      - elasticstack
     volumes:
       - ../services/nginx/conf:/work/nginx
       - ../services/nginx/conf/conf.d/shared:/etc/nginx/conf.d/shared
@@ -44,10 +46,12 @@ services:
         hard: 65536
     cap_add: 
       - IPC_LOCK
+    networks:
+      - elasticstack
     volumes:
       - elasticsearch-data-volume:/usr/share/elasticsearch/data
-    ports:
-      - 9200:9200
+    # logging: 
+    #   driver: none
 
   svc_kibana:
     container_name: svc_kibana
@@ -55,20 +59,51 @@ services:
     restart: always
     environment: 
       - ELASTICSEARCH_HOSTS=http://svc_elastic:9200
-    ports:
-      - 5601:5601
+    networks:
+      - elasticstack
     depends_on: 
       - svc_elastic
+    logging: 
+      driver: none
+
+  svs_filebeat:
+    container_name: svc_filebeat
+    image: docker.elastic.co/beats/filebeat:7.10.1
+    user: root
+    entrypoint: "filebeat -e -strict.perms=false"
+    environment:
+      - setup.kibana.host=svc_kibana:5601
+      - output.elasticsearch.hosts=["svc_elastic:9200"]
+    networks:
+      - elasticstack
+    volumes:
+      - ../services/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
+    depends_on:
+      - svc_nginx
+      - svc_kibana
+      - svc_elastic
+    logging: 
+      driver: none
 
   app_greyhound:
     container_name: app_greyhound
     image: chrisgarrett/node-dev:12.4.0
-    command: dockerize -wait tcp://svc_kibana:5601 -timeout 300s npm run start
+    command: dockerize -wait tcp://svc_kibana:5601 -timeout 300s npm run up
     user: ${LOCAL_USER_ID}:${LOCAL_USER_GROUP_ID}
+    networks:
+      - elasticstack
     volumes:
       - ../sources/js/apps/greyhound/src:/work/app
     depends_on:
       - svc_kibana
+    # logging: 
+    #   driver: none
+
+networks:
+  elasticstack:
+    driver: bridge
 
 volumes:
   elasticsearch-data-volume:

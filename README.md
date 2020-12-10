@@ -1,4 +1,4 @@
-# Watchdog Monitoring & Alerting
+# Watchdog - Monitoring & Alerting Learning Exercise
 ___
 ## Prerequisites/Config
 #### .env
@@ -27,3 +27,11 @@ ___
 
 ## Quickstart
 Navigate to the solution directory and run: `rake up log` to run the entire solution and tail the logs of every container.
+
+## Apps and Services In The Solution
+
+- svc_nginx - Nginx Reverse Proxy
+- svc_elastic - Elasticsearch
+- svc_kibana - Kibana (Generic UI)
+- svc_filebeat - Filebeat Logger
+- app_greyhound - React Application (Custom UI)
