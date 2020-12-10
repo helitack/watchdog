@@ -45,4 +45,5 @@ task :restart => '_solution_watchdog:restart'
 
 # Import the speific tasks for each service and app
 require "../services/nginx/Rakefile-svc_nginx.rb"
+require "../services/filebeat/Rakefile-svc_filebeat.rb"
 require "../sources/js/apps/greyhound/Rakefile-app_greyhound.rb"
