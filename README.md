@@ -1,6 +1,9 @@
 # Watchdog - Monitoring & Alerting Learning Exercise
-___
-## Prerequisites/Config
+
+This app is deployed at `https://app.crispinhoggarth.com`
+
+
+## Dev Prerequisites/Config
 #### .env
 You must have a .env file in your home director called `.watchdog.env`
 ```
@@ -18,12 +21,12 @@ You must have docker and docker-compose installed on your system.
 #### Ruby
 This application uses rake to orchestrate running and building the application. Be sure to have ruby installed and install the required gems in the Gemfile.
 
-___
+
 
 ## Task Runner
 Run the command `rake` in the /solution directory to see a list of rake tasks that can be performed.
 
-___
+
 
 ## Quickstart
 Navigate to the solution directory and run: `rake up log` to run the entire solution and tail the logs of every container.

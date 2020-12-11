@@ -10,7 +10,7 @@ filebeat.autodiscover:
       templates:
         - condition:
             contains:
-              docker.container.name: svc_nginx
+              docker.container.name: svc-nginx
           config:
             - module: nginx
               access:
@@ -30,6 +30,6 @@ processors:
 - add_cloud_metadata: ~
 
 output.elasticsearch:
-  hosts: '${ELASTICSEARCH_HOSTS:svc_elastic:9200}'
+  hosts: '${ELASTICSEARCH_HOSTS:svc-elastic:9200}'
   username: '${ELASTICSEARCH_USERNAME:elastic}'
   password: '${ELASTICSEARCH_PASSWORD:changeme}'
