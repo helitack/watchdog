@@ -6,7 +6,7 @@ import watchdogImage from './watchdog.png';
 
 export const Dashboard = () => {
   return (
-    <Container style={{ paddingTop: '20px' }} maxWidth="lg">
+    <Container style={{ paddingTop: '20px' }} maxWidth="xl">
       <img height="60" width="60" src={watchdogImage} alt="Watchdog" />
       <Typography variant="h2" gutterBottom>
         Meta-Logs!

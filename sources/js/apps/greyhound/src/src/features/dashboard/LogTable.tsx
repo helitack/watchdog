@@ -32,7 +32,10 @@ const useStyles = makeStyles({
     minWidth: 650,
   },
   idRow: {
-    width: '20%',
+    width: '8%',
+  },
+  timeRow: {
+    width: '15%',
   },
 });
 
@@ -59,6 +62,7 @@ export const LogTable = () => {
     return (
       <StyledRow key={hit._id}>
         <TableCell>{hit._id}</TableCell>
+        <TableCell>{hit._source['@timestamp']}</TableCell>
         <TableCell>{hit._source.message}</TableCell>
       </StyledRow>
     );
@@ -70,6 +74,7 @@ export const LogTable = () => {
         <TableHead>
           <TableRow>
             <TableCell className={classes.idRow}>ID</TableCell>
+            <TableCell className={classes.timeRow}>Timestamp</TableCell>
             <TableCell>Log</TableCell>
           </TableRow>
         </TableHead>
