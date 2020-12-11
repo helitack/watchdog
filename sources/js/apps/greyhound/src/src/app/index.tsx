@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
+import CssBaseline from '@material-ui/core/CssBaseline';
 import { GlobalStyle } from '../styles/global-styles';
 
 import { Dashboard } from '../features/dashboard/Loadable';
@@ -16,6 +17,7 @@ export function App() {
   return (
     <BrowserRouter>
       <ReactQueryCacheProvider queryCache={queryCache}>
+        <CssBaseline />
         <Helmet
           titleTemplate="%s - Greyhound Monitoring"
           defaultTitle="Greyhound Monitoring"
