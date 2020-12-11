@@ -1,15 +1,15 @@
 version: '3.7'
 
 services:
-  svc_nginx:
+  svc-nginx:
     image: choggarth/nginx:1.14.0
-    container_name: svc_nginx
+    container_name: svc-nginx
     restart: always
     command: dockerize
       -timeout 600s
-      -wait tcp://svc_elastic:9200
-      -wait tcp://svc_kibana:5601
-      -wait tcp://app_greyhound:3000
+      -wait tcp://svc-elastic:9200
+      -wait tcp://svc-kibana:5601
+      -wait tcp://app-greyhound:3000
       -template /work/nginx/conf.d/http.conf:/etc/nginx/conf.d/_http.conf
       -template /work/nginx/conf.d/watchdog.conf:/etc/nginx/conf.d/watchdog.conf
       nginx -g 'daemon off;'
@@ -19,20 +19,18 @@ services:
       - 80:80
       - 443:443
     depends_on: 
-      - svc_elastic
-      - svc_kibana
-      - app_greyhound
-    networks:
-      - elasticstack
+      - svc-elastic
+      - svc-kibana
+      - app-greyhound
     volumes:
       - ../services/nginx/conf:/work/nginx
       - ../services/nginx/conf/conf.d/shared:/etc/nginx/conf.d/shared
     # logging: 
     #   driver: none
 
-  svc_elastic:
+  svc-elastic:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
-    container_name: svc_elastic
+    container_name: svc-elastic
     restart: always
     environment:
       - xpack.security.enabled=false
@@ -46,25 +44,21 @@ services:
         hard: 65536
     cap_add: 
       - IPC_LOCK
-    networks:
-      - elasticstack
     volumes:
       - elasticsearch-data-volume:/usr/share/elasticsearch/data
     # logging: 
     #   driver: none
 
-  svc_kibana:
-    container_name: svc_kibana
+  svc-kibana:
+    container_name: svc-kibana
     image: docker.elastic.co/kibana/kibana:7.4.0
     restart: always
     environment: 
-      - ELASTICSEARCH_HOSTS=http://svc_elastic:9200
-    networks:
-      - elasticstack
+      - ELASTICSEARCH_HOSTS=http://svc-elastic:9200
     depends_on: 
-      - svc_elastic
-    logging: 
-      driver: none
+      - svc-elastic
+    # logging: 
+    #   driver: none
 
   svs_filebeat:
     container_name: svc_filebeat
@@ -74,36 +68,28 @@ services:
     environment:
       - setup.kibana.host=svc_kibana:5601
       - output.elasticsearch.hosts=["svc_elastic:9200"]
-    networks:
-      - elasticstack
     volumes:
       - ../services/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/lib/docker/containers/:/var/lib/docker/containers/:ro
     depends_on:
-      - svc_nginx
-      - svc_kibana
-      - svc_elastic
-    logging: 
-      driver: none
-
-  app_greyhound:
-    container_name: app_greyhound
-    image: chrisgarrett/node-dev:12.4.0
-    command: dockerize -wait tcp://svc_kibana:5601 -timeout 300s npm run up
-    user: ${LOCAL_USER_ID}:${LOCAL_USER_GROUP_ID}
-    networks:
-      - elasticstack
-    volumes:
-      - ../sources/js/apps/greyhound/src:/work/app
-    depends_on:
-      - svc_kibana
+      - svc-nginx
+      - svc-kibana
+      - svc-elastic
     # logging: 
     #   driver: none
 
-networks:
-  elasticstack:
-    driver: bridge
+  app-greyhound:
+    container_name: app-greyhound
+    image: chrisgarrett/node-dev:12.4.0
+    command: dockerize -wait tcp://svc-elastic:9200 -timeout 300s npm run up
+    user: ${LOCAL_USER_ID}:${LOCAL_USER_GROUP_ID}
+    volumes:
+      - ../sources/js/apps/greyhound/src:/work/app
+    depends_on:
+      - svc-kibana
+    # logging: 
+    #   driver: none
 
 volumes:
   elasticsearch-data-volume:

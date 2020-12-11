@@ -2,15 +2,12 @@ import React from 'react';
 import { useQuery } from 'react-query';
 
 export const Dashboard = () => {
-  const { isLoading, isError, data, error } = useQuery(
-    'nginx-logs',
-    async () => {
-      const result = await fetch('/elastic/filebeat*/_search');
-      const json = await result.json();
-      console.log(json);
-      return json;
-    },
-  );
+  const { isLoading, isError, data } = useQuery('nginx-logs', async () => {
+    const result = await fetch('/elastic/filebeat*/_search');
+    const json = await result.json();
+    console.log(json);
+    return json;
+  });
 
   if (isLoading) {
     return <p>Loading</p>;
@@ -24,7 +21,7 @@ export const Dashboard = () => {
     return <h1>Error: {data.error.reason}</h1>;
   }
 
-  const hits = data.hits.hits.map((hit) => {
+  const hits = data.hits.hits.map(hit => {
     return (
       <tr key={hit._id}>
         <td>{hit._source.message}</td>
@@ -34,9 +31,7 @@ export const Dashboard = () => {
 
   return (
     <table>
-      <tbody>
-        {hits}
-      </tbody>
+      <tbody>{hits}</tbody>
     </table>
   );
 };

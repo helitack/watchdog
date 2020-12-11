@@ -1,6 +1,9 @@
 # Watchdog - Monitoring & Alerting Learning Exercise
 
-## Prerequisites/Config
+This app is deployed at `https://app.crispinhoggarth.com`
+
+
+## Dev Prerequisites/Config
 #### .env
 You must have a .env file in your home director called `.watchdog.env`
 ```

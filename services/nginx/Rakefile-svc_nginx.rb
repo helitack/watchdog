@@ -1,19 +1,19 @@
 
-namespace :svc_nginx do
+namespace :nx do
 
-    desc "svc_nginx: show log"
+    desc "svc-nginx: show log"
     task :log do
-      sh("docker logs -f svc_nginx")
+      sh("docker logs -f svc-nginx")
     end
 
-    desc "svc_nginx: launch bash in container"
+    desc "svc-nginx: launch bash in container"
     task :bash do
-      sh("docker exec -it svc_nginx /bin/bash")
+      sh("docker exec -it svc-nginx /bin/bash")
     end
 
-    desc "svc_nginx: restart service "
+    desc "svc-nginx: restart service "
     task :restart do
-      sh("docker rm -f svc_nginx")
+      sh("docker rm -f svc-nginx")
       sh("rake up")
     end
 
